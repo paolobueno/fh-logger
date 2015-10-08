@@ -1,0 +1,22 @@
+{
+  "name": "fh-logging",
+  "description": "Logger...",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/feedhenry/fh-logger-config.git"
+  },
+  "author": "FeedHenry",
+  "engines": {
+    "node": ">=0.8"
+  },
+  "dependencies": {
+    "bunyan": "^1.5.1"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-fh-build": "^0.0.14",
+    "istanbul": "^0.3.17",
+    "whiskey": "^0.8.4"
+  }
+}
