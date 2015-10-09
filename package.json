@@ -1,6 +1,6 @@
 {
-  "name": "fh-logging",
-  "description": "Logger...",
+  "name": "fh-logger",
+  "description": "Enables a simple way of configuring and creating loggers, configured with request serializers, including clustering information.",
   "version": "0.1.0",
   "repository": {
     "type": "git",
