@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/feedhenry/fh-logger-config.git"
+    "url": "git://github.com/feedhenry/fh-logger.git"
   },
   "author": "FeedHenry",
   "engines": {
