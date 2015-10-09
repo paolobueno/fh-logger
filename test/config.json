@@ -1,0 +1,18 @@
+{
+  "name": "testing",
+  "streams": [{
+    "type": "file",
+    "stream": "file",
+    "path": "./test/test.log",
+    "level": "info"
+  }, {
+    "type": "stream",
+    "src": true,
+    "level": "debug",
+    "stream": "process.stdout"
+  }, {
+    "type": "raw",
+    "src": true,
+    "level": "trace"
+  }]
+}
