@@ -7,6 +7,7 @@
     "url": "git://github.com/feedhenry/fh-logger.git"
   },
   "author": "FeedHenry",
+  "main": "./lib/fh_logger.js",
   "engines": {
     "node": ">=0.8"
   },
