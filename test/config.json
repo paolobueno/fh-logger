@@ -4,7 +4,7 @@
     "type": "file",
     "stream": "file",
     "path": "./test/test.log",
-    "level": "info"
+    "level": "debug"
   }, {
     "type": "stream",
     "src": true,
