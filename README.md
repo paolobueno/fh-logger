@@ -52,19 +52,7 @@ var logger = fh_logger.createLogger(stringConfig);
 To run all the tests:
 
 ```shell
-grunt fh:unit
-```
-
-To run all tests in a test file:
-
-```shell
-whiskey --real-time --report-timing --failfast --tests test.test_fh_logger.*
-```
-
-To run a single test method:
-
-```shell
-whiskey --real-time --report-timing --failfast --tests test.test_fh_logger.test_createLogger_stream_process_stdout
+grunt mochaTest
 ```
 
 
