@@ -14,18 +14,34 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-var fh_logger = require('../lib/fh_logger.js');
+var rewire = require('rewire');
+var fh_logger = rewire('../lib/fh_logger.js');
 var expect = require('chai').expect
 var bunyan = require('bunyan'); 
 var fs = require('fs');
 
-describe('fh_logger.createLogger', function() {
+describe('fh_logger', function() {
+
+  describe('createLogger', function() {
+
+    describe('with null config', function() {
+      it('should throw error if config is undefined', function() {
+        var createLogger = fh_logger.createLogger;
+        expect(createLogger.bind(createLogger, undefined)).to
+        .throw('config instance must be specified');
+      });
+      it('should throw error if config is null', function() {
+        var createLogger = fh_logger.createLogger;
+        expect(createLogger.bind(createLogger, null)).to
+        .throw('config instance must be specified');
+      });
+    });
 
     describe('with Bunyan defaults', function() {
       var logger;
       before(function(){
         logger = fh_logger.createLogger({name: 'simple'});
-      })
+      });
       it('name should have been set to simple', function() {
         expect(logger.fields.name).to.equal('simple');
       });
@@ -51,7 +67,7 @@ describe('fh_logger.createLogger', function() {
           {type: 'file', stream: 'file', path: logFile, level: 'info'}
         ]};
         logger = fh_logger.createLogger(config);
-      })
+      });
       it('name should have been set to file_logger', function() {
         expect(logger.fields.name).to.equal('file_logger');
       });
@@ -77,7 +93,7 @@ describe('fh_logger.createLogger', function() {
           {type: 'file', stream: 'file', path: logFile, level: 'debug'}
         ]});
         logger = fh_logger.createLogger(config);
-      })
+      });
       it('name should have been set to file_logger_string', function() {
         expect(logger.fields.name).to.equal('file_logger_string');
       });
@@ -110,7 +126,7 @@ describe('fh_logger.createLogger', function() {
           {type: 'stream', stream: 'process.stdout', level: 'debug'}
         ]});
         logger = fh_logger.createLogger(config);
-      })
+      });
       it('name should have been set to from_string_stdout', function() {
         expect(logger.fields.name).to.equal('from_string_stdout');
       });
@@ -135,7 +151,7 @@ describe('fh_logger.createLogger', function() {
           {type: 'raw', stream: 'ringbuffer', level: 'trace'}
         ]});
         logger = fh_logger.createLogger(config);
-      })
+      });
       it('name should have been set to from_string_raw', function() {
         expect(logger.fields.name).to.equal('from_string_raw');
       });
@@ -163,7 +179,7 @@ describe('fh_logger.createLogger', function() {
           stream: 'process.stderr', type: 'stream'}
         ]});
         logger = fh_logger.createLogger(config);
-      })
+      });
       it('name should have been set to test_stderr', function() {
         expect(logger.fields.name).to.equal('test_stderr');
       });
@@ -186,7 +202,7 @@ describe('fh_logger.createLogger', function() {
       before(function(){
         var config = fs.readFileSync(__dirname + '/config.json').toString();
         logger = fh_logger.createLogger(config);
-      })
+      });
       it('name should have been set to test_stderr', function() {
         expect(logger.fields.name).to.equal('testing');
       });
@@ -229,7 +245,106 @@ describe('fh_logger.createLogger', function() {
         expect(logger.streams[2].level).to.equal(bunyan.TRACE);
       });
     });
+  });
+
+  describe('createStreams', function() {
+    var createStreams;
+    before(function(){
+      createStreams = fh_logger.__get__("createStreams");
+    });
+    it('no configured streams should be alright, Will default to Bunyan defaults', function() {
+      var streams = createStreams({name: 'testing'});
+      expect(streams).to.be.null;
+    });
+    it('raw type should produce a RingBuffer', function() {
+      var streams = createStreams({name: 'testing', streams: [{type: 'raw'}]});
+      expect(streams.length).to.equal(1);
+      expect(streams[0].type).to.equal('raw');
+      expect(streams[0].records).is.defined;
+    });
+    it("stream type with stream 'process.stdout'", function() {
+      var streams = createStreams({name: 'testing', streams: [{type: 'stream', stream: 'process.stdout'}]});
+      expect(streams.length).to.equal(1);
+      expect(streams[0].type).to.equal('stream');
+      expect(streams[0].stream).to.equal(process.stdout);
+    });
+    it("stream type with stream 'process.stderr'", function() {
+      var streams = createStreams({name: 'testing', streams: [{type: 'stream', stream: 'process.stderr'}]});
+      expect(streams.length).to.equal(1);
+      expect(streams[0].type).to.equal('stream');
+      expect(streams[0].stream).to.equal(process.stderr);
+    });
+    it("stream type with stream 'gibberish'", function() {
+      var config = {name: 'testing', streams: [{type: 'stream', stream: 'gibberish'}]};
+      expect(createStreams.bind(createStreams, config)).to
+      .throw('gibberish is not defined');
+    });
+  });
+
+  describe('default requestSerializer', function() {
+    var requestSerializer;
+    before(function(){
+       requestSerializer = fh_logger.__get__("requestSerializer");
+    });
+    it("should have reqId property included in logging requests", function() {
+      expect(requestSerializer.reqId).to.be.defined;
+    });
+    it("should have method property included in logging requests", function() {
+      expect(requestSerializer.method).to.be.defined;
+    });
+    it("should have url property included in logging requests", function() {
+      expect(requestSerializer.url).to.be.defined;
+    });
+    it("should have worker property included in logging requests.", function() {
+      expect(requestSerializer.worker).to.be.defined;
+    });
+  });
+
+  describe('createSerializers', function() {
+    var createSerializers;
+    before(function(){
+       createSerializers = fh_logger.__get__("createSerializers");
+    });
+    it("with no configured serializers should return default request serializer", function() {
+      expect(createSerializers({}).req).to.be.defined;
+    });
+    it("with no configured serializers should return default bunyan response serializer", function() {
+      expect(createSerializers({}).res).to.be.defined;
+      expect(createSerializers({}).res.statusCode).to.be.defined;
+    });
+    it("with configured request serrializer", function() {
+      var config = { serializers : {
+          req : function(r) { return { dummy: 'testing'}; }
+        }
+      };
+      var serializers = createSerializers(config);
+      expect(serializers.req).to.be.defined;
+      expect(serializers.req({}).dummy).to.be.defined;
+    });
+    it("with configured response serrializer", function() {
+      var config = { serializers : {
+          res : function(r) { return { dummy: 'testing'}; }
+        }
+      };
+      var serializers = createSerializers(config);
+      expect(serializers.res).to.be.defined;
+      expect(serializers.res({}).dummy).to.be.defined;
+    });
+  });
+
+  describe('parseConfig', function() {
+    var parseConfig;
+    before(function(){
+       parseConfig = fh_logger.__get__("parseConfig");
+    });
+    it("string config should be parsed to JSON", function() {
+      var config = parseConfig('{"name": "testing"}');
+      expect(config.name).to.be.equal('testing');
+    });
+  });
+
 });
+
 
 var deleteFile = function(file) {
   fs.exists(file, function(exists) {
