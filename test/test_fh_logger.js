@@ -37,6 +37,15 @@ describe('fh_logger', function() {
       });
     });
 
+    describe('should make copy of provided config', function() {
+      it('config should not be modified when passed to createLogger function', function() {
+        var config = {name: 'simple'};
+        expect(Object.keys(config).length).to.equal(1);
+        var logger = fh_logger.createLogger(config);
+        expect(Object.keys(config).length).to.equal(1);
+      });
+    });
+
     describe('with Bunyan defaults', function() {
       var logger;
       before(function(){
