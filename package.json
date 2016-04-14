@@ -12,19 +12,23 @@
   "engines": {
     "node": ">=0.8"
   },
+  "scripts": {
+    "test": "grunt eslint fh-test",
+    "version": "sed -i.bak \"s/sonar.projectVersion=.*/sonar.projectVersion=${npm_package_version}/\" sonar-project.properties && rm sonar-project.properties.bak && git add sonar-project.properties"
+  },
   "dependencies": {
     "bunyan": "^1.5.1"
   },
   "devDependencies": {
     "chai": "^3.3.0",
-    "grunt": "^0.4.5",
-    "grunt-fh-build": "^0.5.0",
-    "chai": "^3.3.0",
-    "mocha": "2.3.1",
-    "grunt-mocha": "^0.4.13",
-    "grunt-mocha-istanbul": "^3.0.1",
+    "eslint": "^2.7.0",
+    "grunt": "^1.0.1",
+    "grunt-fh-build": "^1.0.1",
+    "grunt-mocha": "^1.0.1",
+    "grunt-mocha-istanbul": "^4.0.2",
     "grunt-mocha-test": "^0.12.7",
-    "istanbul": "^0.3.17",
+    "istanbul": "^0.4.3",
+    "mocha": "^2.4.5",
     "rewire": "^2.3.4"
   }
 }
