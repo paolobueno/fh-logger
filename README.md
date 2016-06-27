@@ -82,7 +82,7 @@ For logging inside callbacks that are supposed to display the `requestId` but fo
 
 ```
 logger.ensureRequestId(function asyncOperation(err, data){
-  logger.error(err); // -> {requestId: 'some-uuid'}
+  logger.error(err); // -> {req.reqId: 'some-uuid'}
 });
 ```
 
