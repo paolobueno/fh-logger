@@ -19,7 +19,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     _test_runner: '_mocha',
     _istanbul: 'istanbul cover --dir',
-    _unit_args: '--recursive -t 10000 ./test/test_request-id.js',
+    _unit_args: '--recursive -t 10000 ./test/',
     unit: '<%= _test_runner %> <%= _unit_args %>',
     unit_cover: '<%= _istanbul %> cov-unit <%= _test_runner %> -- <%= _unit_args %>',
     mochaTest: {
